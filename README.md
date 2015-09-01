@@ -7,5 +7,5 @@
 ## 当前文章  
 文章 | 作者 | 
 :--|:-- |
-[MAT使用进阶](https://github.com/Androooid/treasure/blob/master/source/posts/lightsky/mat_usage.md) | [lightSky](https://github.com/lightSky) |
+[MAT使用进阶](https://github.com/Androooid/treasure/blob/master/source/lightsky/posts/mat_usage.md) | [lightSky](https://github.com/lightSky) |
 
