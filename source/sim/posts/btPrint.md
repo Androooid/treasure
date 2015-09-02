@@ -29,21 +29,32 @@ RFCOMM是一个简单传输协议，其目的为了解决如何在两个不同�
 1. BluetoothAdapter 
 
 	本地蓝牙设备适配器，获取本地蓝牙信息，搜索附近蓝牙设备。
-	`BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter()`
-	`adapter.startDiscovery()`  
-	`Set<BluetoothDevice> devices = adapter.getBondedDevices()`
+	
+	
+	```java
+	 BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter()   
+	 adapter.startDiscovery()	
+	 Set<BluetoothDevice> devices = adapter.getBondedDevices()
+	```
+
 
 2. BluetoothDevice
 
- 	远程蓝牙设备，可以获取mac,name,连接状态等。用于连接socket。
-	`BluetoothSocket mClientSocket=mDevice.createRfcommSocketToServiceRecord(UUID.fromString(RF_UUID))`
+ 	远程蓝牙设备，可以获取mac,name,连接状态等。用于连接socket。     
+	
+	```java
+	BluetoothSocket mClientSocket=mDevice.createRfcommSocketToServiceRecord(UUID.fromString(RF_UUID))
+	```
 
 3. BluetoothSocket 
 
  	蓝牙连接socket，RFCOMM通信基础，通过获取output和input和蓝牙设备通信。  
-	`mClientSocket.connect()`  
-	`OutputStream mOutPut = mClientSocket.getOutputStream()`  
-	`mOutPut.write(bytes)`
+ 	
+ 	```java
+	mClientSocket.connect()		
+	OutputStream mOutPut = mClientSocket.getOutputStream() 
+	mOutPut.write(bytes)
+	```
 
 	
 ## 实例
@@ -61,7 +72,9 @@ RFCOMM是一个简单传输协议，其目的为了解决如何在两个不同�
 
 4. 打印图片(16*16,正常尺寸)
 
-	`mOutPut.write(new byte[] { 0x1D, 0x76, 0x30, 0x00, 0x10, 0x00, 0x01,0xFF..... })`
+	```java
+	mOutPut.write(new byte[] { 0x1D, 0x76, 0x30, 0x00, 0x10, 0x00, 0x01,0xFF..... })
+	```
 
 5. 释放打印资源
 
