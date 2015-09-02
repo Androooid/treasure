@@ -1,6 +1,10 @@
 #Android Robotium自动化测试使用手册
 
 ##1.概述
+Robotium是Android自带类Instrumentation的一个封装，方便测试人员直接调用封装好的接口，也就是说，实际上我们直接使用Instrumentation也能够进行自动化测试，但Robotium可以简化我们的测试步骤，我们只需要调用某个Robotium的API，传几个参数，就等于我们在调用一部分的Instrumentation帮我们实现测试。
+
+然而实际上Robotium还是具有很多缺点的，比如所有的代码都依赖于一个Solo对象，无法很好的面向对象进行操作；H5页面操作也很繁琐，定位控件不易。故使用者可以进行一些二次开发使后续的测试工作更加简便。另外由于Robotium可以直接和源码放在同一工程下，所以其十分适合单元测试。
+
 ##2.配置方法
 
 Robotium的配置十分方便，只需要一个Jar包即可，Jar包和文档下载：
@@ -17,7 +21,7 @@ Robotium的配置十分方便，只需要一个Jar包即可，Jar包和文档下
 
 构造函数：参数使用App的入口activity
 
-```
+```java
 public AppTest(){
 	super(SplashScreenActivity.class);
 }
@@ -25,7 +29,7 @@ public AppTest(){
 
 setUp函数：不要忘记新建一个Solo变量
 
-```
+```java
 private Solo solo;
 
 @override
@@ -36,7 +40,7 @@ public void setUp() throws Exception {
 
 tearDown函数：
 
-```
+```java
 @override
 public void tearDown() throws Exception {
 	solo.finishOpenedActivities();
@@ -54,7 +58,7 @@ public void tearDown() throws Exception {
 
 通过工具知道被测应用的完整入口activity，例如com.xxx.xxx.xxx.MainActivity。随后使用反射获取这个类，如下：
 
-```
+```java
 private static String mainActiviy = "com.example.MainActivity";
 
 static{
@@ -70,7 +74,7 @@ static{
 而在构造函数中传入这个launchActivityClass即可。
 另一方面，需要在manifest.xml中添加字段：
 
-```
+```java
 <instrumentation
    android:name="android.test.InstrumentationTestRunner"
    android:targetPackage="com.example.xxx.xxx" />
@@ -84,13 +88,13 @@ Robotium的定位一般可以采用text（内容）、id、index这三种方法�
 
 通过id进行操作：
 
-```
+```java
 View view = solo.getView(id);
 solo.clickOnView(view);
 ```
 通过text进行操作（由于通过text定位必须知道控件的类型，所以可以进行以下封装，使操作统一化）：
 
-```
+```java
 switch (viewType) {
     case Button:
         solo.clickOnButton(text);
@@ -105,7 +109,7 @@ switch (viewType) {
 
 对于Editext输入框来说，找到控件同样可以通过id或者text的方法：
 
-```
+```java
 EditText editText1 = solo.getEditText(originText);
 EditText editText2 = (EditText) solo.getView(id);
 
@@ -118,18 +122,18 @@ solo.enterText(editText2, text);
 
 查找逻辑的使用方法为：
 
-```
+```java
 solo.searchText(text);
 ```
 此方法主要在有可能产生分叉的流程中用到，例如闪惠收银台页面现在需求登录后才能付款，那么这个页面就会有登录和未登录状态，如下所以：
 
-<img src="../img/robotium/hui_example.png" width="700" height="470"/>
+<img src="../img/robotium/hui_example.png" width="900" height="470"/>
        
 那边左侧的蓝色文字“立即登录”就可以作为区分的条件，而searchText方法返回的是boolean值，可直接用作判断条件。
 
 waitFor则用于页面载入较慢的情况下，所以需要等待目标元素出现后再进行操作:
 
-```
+```java
 solo.waitForText(text, 0, timeout);
 dolo.waitForView(id, 0, timeout);
 ```
@@ -139,7 +143,7 @@ dolo.waitForView(id, 0, timeout);
 
 另外页面展示的结果判断目前只能通过截图来进行，截图的方法为：
 
-```
+```java
 solo.takeScreenshot(picName);
 ```
 其中picName是保存的图片名称，其默认存储于手机上的/sdcard/Robotium-Screenshots文件夹下。
@@ -149,24 +153,24 @@ solo.takeScreenshot(picName);
 这里以支付宝付款页面为例，这个页面是主流程中用到频率相对高的H5页面。
 首先H5页面没有源码，无法使用Android工具进行控件查找。所以可以通过Android调试查看相应元素，当然前提是获得当前H5页面的元素集合：
 
-```
+```java
 ArrayList<WebElement> t = solo.getCurrentWebElements();
 ```
 
 有时刚跳入H5页面时，并没有获取页面焦点，所以在正式操作前，可以使用clickOnWebElement获取焦点：
 
-```
+```java
 solo.clickOnWebElement(t.get(x));
 ```
 而按键信息的传递，如果无法使用相关的WebElement操作方法，那么可以使用solo.sendKey方法发送KeyEvent，如下发送的是按键1，支付宝页面亲测可用：
 
-```
+```java
 solo.sendKey(KeyEvent.KEYCODE_1);
 ```
 
 而对一些正常的元素，像按钮这种一般还是可以获取到的：
 
-```
+```java
 WebElement x = solo.getWebElement(By.tagName("BUTTON"), 0);
 ```
 
