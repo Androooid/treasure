@@ -12,12 +12,17 @@ RFCOMM是一个简单传输协议，其目的为了解决如何在两个不同�
 日本的 EPSON 公司在目前的 POS 打印机市场，尤其是针式打印机市场占有很大一部分份额。它所推行的 ESC 打印控制命令 (EPSON StandardCode for Pr5nter) 已经成为了针式打印机控制语言事实上的工业标准，ESC/POS 打印命令集是 ESC 打印控制命令的简化版本，现在大多数 POS 打印都采用 ESC/POS 指令集。绝大多数打印机都有 EPSON ESC 的软件命令仿真功能，而且其它打印控制命令的格式和功能也都与 ESC 代码集类似。
 
 1. 初始化  
+	
 	![init](../img/btPrint/init.png)
 	
 2. 打印文字
+	
 	![text](../img/btPrint/text.png)
+	
 	![size](../img/btPrint/size.png)
+	
 3. 打印图片
+	
 	![pic](../img/btPrint/pic.png)
 
 
