@@ -10,4 +10,5 @@
 [MAT使用进阶](https://github.com/Androooid/treasure/blob/master/source/lightsky/posts/mat_usage.md) | [lightSky](https://github.com/lightSky) |
 [Android Robotium使用手册](https://github.com/Androooid/treasure/blob/master/source/lockerlou/posts/android_robotium.md) | [LockerLou](https://github.com/Locker-Lou) |
 [Android如何使用蓝牙打印机](https://github.com/Androooid/treasure/blob/master/source/sim/posts/btPrint.md) | [sim](https://github.com/grushy) |
+[记一次Android内存分析过程](https://github.com/Androooid/treasure/blob/master/source/bequietlee/posts/high_memory_analyze.md) | [BeQuietLee](https://github.com/bequietlee) |
 
