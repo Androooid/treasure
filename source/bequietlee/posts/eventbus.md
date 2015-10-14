@@ -45,9 +45,69 @@ eventBus.post(event);
 Demo
 --------------------------
 [此处应有截图]
+实现功能
+* 两个标签页面A&B，用Fragment实现
+* 页面A点击 ```Add``` ，页面B数字递增
+使用接口回调方式实现
+-----------------------
+在 ```FragmentA``` 中声明了自己的 ```Add``` 按钮对应的回调接口。
+```java
+public interface PerformAddListener {
+    void performAdd();
+}
+```
+在外层Activity中实现了该接口
+```java
+@Override
+public void performAdd() {
+    if (displayFragment == null) {
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        displayFragment = new DisplayFragment();
+        transaction.add(containerId, displayFragment);
+        transaction.hide(displayFragment);
+        transaction.commit();
+        fragmentManager.executePendingTransactions();
+    }
+    displayFragment.add();
+}
+```
+上述方法有如下缺点：
 
-* 两个标签页面，用Fragment实现
-* 页面A点击 ```+``` ，页面B数字递增
+1.Fragment之间无法直接通信，需要容器Activity充当中转器
+
+2.Activity需要实现消息发送者提供的接口，以支持回调
+
+3.Activity需要显示调用消息接受者提供的方法，以完成消息传递
+
+4.以上各点造成了强烈的耦合，后续在增加／删除消息发送者／接收者时，成本成倍增加
+使用EventBus实现
+--------------------------
+事件发送者Fragment
+```java
+private void postAddEvent() {
+    EventBus.getDefault().post(new Event.AddEvent());
+}
+```
+事件接收者Fragment
+```java
+@Override
+public void onStart() {
+    super.onStart();
+    EventBus.getDefault().register(this);
+}
+```
+```java
+@Override
+public void onStop() {
+    EventBus.getDefault().unregister(this);
+    super.onStop();
+}
+```
+```java
+public void onEvent(Event.AddEvent addEvent) {
+    add();
+}
+```
 Fragment hide/show
 对比两种实现Interface/EventBus
 [show code]
