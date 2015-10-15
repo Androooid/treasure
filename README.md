@@ -13,4 +13,4 @@
 [记一次Android内存分析过程](https://github.com/Androooid/treasure/blob/master/source/bequietlee/posts/high_memory_analyze.md) | [BeQuietLee](https://github.com/bequietlee) |
 [Android Appium使用手册](https://github.com/Androooid/treasure/blob/master/source/qsqqinsao/posts/android_appium.md) | [qsqqinsao](https://github.com/qsqqinsao) |
 [Volley杂谈](https://github.com/Androooid/treasure/blob/master/source/bigfootprint/posts/2015-08-09-volleyza-tan.markdown) | [BigFootprint](https://github.com/BigFootprint) |
-
+[EventBus分享](https://github.com/Androooid/treasure/blob/master/source/bequietlee/posts/eventbus.md) | [BeQuietLee](https://github.com/bequietlee) |
