@@ -218,8 +218,8 @@ ProGuard配置
 
 背景知识：观察者模式
 -----------------------
-<img src="../img/eventbus/observer1" width="600" height="400">
-<img src="../img/eventbus/observer2" width="600" height="400">
+<img src="../img/eventbus/observer1.png" width="600" height="600">
+<img src="../img/eventbus/observer2.png" width="600" height="600">
 
 **定义：**观察者模式定义了对象之间的一对多依赖，这样一来，当一个对象改变状态时，它的所有依赖者都会收到通知并自动更新。
 
