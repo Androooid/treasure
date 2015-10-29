@@ -94,6 +94,48 @@ public void itemClick(AdapterView<?> parent, View view, int position,long id) {
     // list点击操作
 }
 ```
+### 源码解析
+1.ViewUtils.java
+
+View和各种事件的注入以及资源的注入。
+```java
+private static void injectObject(Object handler, ViewFinder finder)
+```
+第一个参数Object handler代表的是需要注入的对象， 第二个参数是需要注入View（这个View就是 handler 的成员变量）所在的 View或者Activity的包装对象。该方法完成了View和各种事件的注入以及资源的注入。主要的原理就是通过反射和注解：
+
+* 完成Activity的setContentView。
+* 完成View 的注入。
+* 完成资源的注入。
+* 完成各种事件的注入。
+
+2.ViewFinder.java
+```java
+public View findViewById(int id, int pid)
+public View findViewById(int id)
+```
+如果存在父View， 优先从父View寻找，否则从当前的View或者Activity中寻找。
+
+3.ResLoader.java
+```java
+public static Object loadRes(ResType type, Context context, int id)
+```
+获取资源文件值，支持多种资源的获取。
+
+4.EventListenerManager.java
+
+事件的注入， 基于动态代理。
+```java
+private final static DoubleKeyValueMap<ViewInjectInfo, Class<?>, Object> listenerCache =
+new DoubleKeyValueMap<ViewInjectInfo, Class<?>, Object>();
+```
+存放监听事件接口map。 因为有些接口有多个函数， 代理会判断事件接口是否存在， 如果存在只增加代理方法就够了， 避免重新设置监听事件接口。
+
+```java
+public static void addEventMethod( ViewFinder finder, ViewInjectInfo info,
+            Annotation eventAnnotation, Object handler, Method method)
+```
+代理监听事件
+
 ## HttpUtils模块
 ### 功能
 * 支持同步，异步方式的请求；
@@ -246,6 +288,94 @@ httpUtils.send(HttpRequest.HttpMethod.POST, "http://www.qq.com/upload", params,
         }
     });
 ```
+### 源码分析
+1.HttpUtils.java
+
+支持异步同步访问网络数据， 断点下载文件。
+```java
+//网络数据的缓存。
+public final static HttpCache sHttpCache = new HttpCache();
+//访问网络的 HttpClient。
+private final DefaultHttpClient httpClient;
+private final HttpContext httpContext = new BasicHttpContext();
+//线程池。
+private final static PriorityExecutor EXECUTOR = new PriorityExecutor(DEFAULT_POOL_SIZE);
+```
+
+```java
+public HttpUtils(int connTimeout, String userAgent) {
+    //配置超时时间，UserAgent， http 版本信息协议等一些信息
+    .....
+    //将配置的参数统一放到 httpClient 中
+    httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, schemeRegistry), params);
+    ....
+
+    //下面这个关键，设置拦截器。 默认加上 gizp 压缩。 通过 gizp 压缩后的数据传输效率高很多。
+    httpClient.addRequestInterceptor(new HttpRequestInterceptor() {
+        @Override
+        public void process(org.apache.http.HttpRequest httpRequest, HttpContext httpContext) throws org.apache.http.HttpException, IOException {
+            if (!httpRequest.containsHeader(HEADER_ACCEPT_ENCODING)) {
+                httpRequest.addHeader(HEADER_ACCEPT_ENCODING, ENCODING_GZIP);
+            }
+        }
+    });
+
+    httpClient.addResponseInterceptor(new HttpResponseInterceptor() {
+        @Override
+        public void process(HttpResponse response, HttpContext httpContext) throws org.apache.http.HttpException, IOException {
+            final HttpEntity entity = response.getEntity();
+            if (entity == null) {
+                return;
+            }
+            final Header encoding = entity.getContentEncoding();
+            if (encoding != null) {
+                for (HeaderElement element : encoding.getElements()) {
+                    if (element.getName().equalsIgnoreCase("gzip")) {
+                        //这里判断从服务器传输的数据是否需要通过 gzip 解压。
+                        response.setEntity(new GZipDecompressingEntity(response.getEntity()));
+                        return;
+                    }
+                }
+            }
+        }
+    });
+}
+```
+```java
+//访问网络数据
+private <T> HttpHandler<T> sendRequest(HttpRequest request, RequestParams params, RequestCallBack<T> callBack);
+//下载网络文件
+public HttpHandler<File> download(HttpRequest.HttpMethod method, String url, String target,
+    RequestParams params, boolean autoResume, boolean autoRename, RequestCallBack<File> callback);
+```
+2.HttpRequest.java
+
+网络请求的包装类，包括url， 访问请求方法， 参数值等。
+
+3.RequestCallBack.java
+
+完成数据请求回调接口。
+
+4.HttpHandler.java
+
+获取网络数据逻辑的实现。
+
+5.HttpCache.java
+
+网络数据的缓存，内部包含LruMemoryCache，在获取数据的时候会判断是否过期。
+
+6.StringDownLoadHandler.java
+
+handleEntity()将网络io流转化为String。
+
+7.FileDownLoadHandler.java
+
+handleEntity()将网络io流转化为File。
+
+8.HttpException.java
+
+统一异常对象。
+
 ### 对比Volley
 相同点：
 * 均采用了网络数据缓存机制。
@@ -287,7 +417,7 @@ xUtils可以设置拦截器，对请求做了GZIP压缩
 
 * 文件传输支持
 
-> Volley不支持文件上传下载。
+> Volley不支持文件上传/下载。
 
 > xUtils支持文件上传/下载，支持进度显示，支持断点。
 
@@ -362,6 +492,76 @@ Least Recently Used，近期最少使用算法, xUtils中LruDiskCache类，用�
 情景：内存缓存设置的阈值只够存储n个bitmap对象，LRU算法按照使用频率的顺序排列所存储的bitmap对象，当put第n+1个bitmap对象时，将近期最少使用的bitmap对象移除。
 
 关于图片缓存及LRU算法的知识拓展戳[这里](http://blog.csdn.net/t12x3456/article/details/7788149)
+### 源码分析
+1.BitmapUtils.java
+
+图片的异步加载，支持本地和网络图片， 图片的压缩处理， 图片的内存缓存已经本地缓存。
+```java
+private BitmapGlobalConfig globalConfig; // 线程池，缓存，和网络的配置
+private BitmapDisplayConfig defaultDisplayConfig; //图片显示的配置
+/**
+* @param container 表示需要显示图片的 View
+* @param uri 图片的 uri
+* @param displayConfig 图片显示的配置
+* @param callBack 图片加载的回调接口
+*/
+public <T extends View> void display(T container, String uri, BitmapDisplayConfig displayConfig, BitmapLoadCallBack<T> callBack)
+```
+2.BitmapLoadTask.java
+
+加载图片的异步任务。在doInBackground中读取图片资源
+
+3.BitmapCache.java
+```java
+private LruDiskCache mDiskLruCache; //闪存缓存
+private LruMemoryCache<MemoryCacheKey, Bitmap> mMemoryCache; //运存缓存
+...
+//下载网络图片， 然后根据配置压缩图片， 将图片缓存。
+public Bitmap downloadBitmap(String uri, BitmapDisplayConfig config, final BitmapUtils.BitmapLoadTask<?> task)
+//从运存缓存中读取 bitmap 在获取的时候会判断是否过期
+public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig config)
+//从闪存缓存中读取 bitmap
+public Bitmap getBitmapFromDiskCache(String uri, BitmapDisplayConfig config)
+```
+4.BitmapGlobalConfig.java
+
+配置， 包括线程池， 缓存的大小。
+```java
+//闪存缓存的路径
+private String diskCachePath;
+//运存缓存的最大值
+private int memoryCacheSize = 1024 * 1024 * 4; // 4MB
+//闪存缓存的最大值
+private int diskCacheSize = 1024 * 1024 * 50;  // 50M
+//从网络加载数据的线程池
+private final static PriorityExecutor BITMAP_LOAD_EXECUTOR = new PriorityExecutor(DEFAULT_POOL_SIZE);
+//从闪存读取数据的线程池
+private final static PriorityExecutor DISK_CACHE_EXECUTOR = new PriorityExecutor(2);
+//bitmap 缓存的的时间
+private long defaultCacheExpiry = 1000L * 60 * 60 * 24 * 30; // 30 days
+//bitmap 缓存
+private BitmapCache bitmapCache;
+```
+5.BitmapDisplayConfig.java
+```java
+//图片显示的大小
+private BitmapSize bitmapMaxSize;
+//图片的动画
+private Animation animation;
+// 图片加载过程中的显示图片
+private Drawable loadingDrawable;
+// 图片加载失败的显示图片
+private Drawable loadFailedDrawable;
+// 图片显示的配置色彩
+private Bitmap.Config bitmapConfig = Bitmap.Config.RGB_565;
+```
+6.DefaultDownloader.java
+
+获取bitmap，支持三种获取路径，本地图片，资源图片和网络图片。
+
+7.DefaultBitmapLoadCallBack.java
+
+图片加载完成的的回调， 默认回调将获取的bitmap值传递给view。
 
 ## DbUtils模块
 
