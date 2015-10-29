@@ -565,7 +565,7 @@ private Bitmap.Config bitmapConfig = Bitmap.Config.RGB_565;
 * 可通过注解自定义表名，列名，外键，唯一性约束，NOT NULL约束，CHECK约束等（需要混淆的时候请注解表名和列名）；
 * 支持绑定外键，保存实体时外键关联实体自动保存或更新；
 * 自动加载外键关联实体，支持延时加载；
-* 支持链式表达查询，更直观的查询语义，参考下面的介绍或sample中的例子。
+* 支持链式表达查询，更直观的查询语义。
 
 ### 创建
 通常，Android如果要存储一个对象，需要创建一个SQLiteOpenHelper，然后创建一张对应对象各个属性的表，还得把对象转换成ContentValues，进而去存储。
