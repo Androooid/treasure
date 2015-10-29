@@ -490,7 +490,7 @@ Least Recently Used，近期最少使用算法, xUtils中LruDiskCache类，用�
 ### 源码分析
 1.BitmapUtils.java
 
-图片的异步加载，支持本地和网络图片， 图片的压缩处理， 图片的内存缓存已经本地缓存。
+图片的异步加载，支持本地和网络图片， 图片的压缩处理， 图片的内存缓存以及本地缓存。
 ```java
 private BitmapGlobalConfig globalConfig; // 线程池，缓存，和网络的配置
 private BitmapDisplayConfig defaultDisplayConfig; //图片显示的配置
@@ -502,11 +502,9 @@ private BitmapDisplayConfig defaultDisplayConfig; //图片显示的配置
 */
 public <T extends View> void display(T container, String uri, BitmapDisplayConfig displayConfig, BitmapLoadCallBack<T> callBack)
 ```
-2.BitmapLoadTask.java
+加载图片的异步任务，会在doInBackground方法中读取图片资源。
 
-加载图片的异步任务。在doInBackground中读取图片资源
-
-3.BitmapCache.java
+2.BitmapCache.java
 ```java
 private LruDiskCache mDiskLruCache; //闪存缓存
 private LruMemoryCache<MemoryCacheKey, Bitmap> mMemoryCache; //运存缓存
@@ -518,7 +516,7 @@ public Bitmap getBitmapFromMemCache(String uri, BitmapDisplayConfig config)
 //从闪存缓存中读取 bitmap
 public Bitmap getBitmapFromDiskCache(String uri, BitmapDisplayConfig config)
 ```
-4.BitmapGlobalConfig.java
+3.BitmapGlobalConfig.java
 
 配置， 包括线程池， 缓存的大小。
 ```java
@@ -537,7 +535,7 @@ private long defaultCacheExpiry = 1000L * 60 * 60 * 24 * 30; // 30 days
 //bitmap 缓存
 private BitmapCache bitmapCache;
 ```
-5.BitmapDisplayConfig.java
+4.BitmapDisplayConfig.java
 ```java
 //图片显示的大小
 private BitmapSize bitmapMaxSize;
@@ -550,11 +548,11 @@ private Drawable loadFailedDrawable;
 // 图片显示的配置色彩
 private Bitmap.Config bitmapConfig = Bitmap.Config.RGB_565;
 ```
-6.DefaultDownloader.java
+5.DefaultDownloader.java
 
 获取bitmap，支持三种获取路径，本地图片，资源图片和网络图片。
 
-7.DefaultBitmapLoadCallBack.java
+6.DefaultBitmapLoadCallBack.java
 
 图片加载完成的的回调， 默认回调将获取的bitmap值传递给view。
 
