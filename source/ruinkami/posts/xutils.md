@@ -123,13 +123,12 @@ public static Object loadRes(ResType type, Context context, int id)
 
 4.EventListenerManager.java
 
-事件的注入， 基于动态代理。
+事件的注入，基于动态代理。
 ```java
 private final static DoubleKeyValueMap<ViewInjectInfo, Class<?>, Object> listenerCache =
 new DoubleKeyValueMap<ViewInjectInfo, Class<?>, Object>();
 ```
-存放监听事件接口map。 因为有些接口有多个函数， 代理会判断事件接口是否存在， 如果存在只增加代理方法就够了， 避免重新设置监听事件接口。
-
+存放监听事件接口map。因为有些接口有多个函数，代理会判断事件接口是否存在，如果存在只增加代理方法就够了， 避免重新设置监听事件接口。
 ```java
 public static void addEventMethod( ViewFinder finder, ViewInjectInfo info,
             Annotation eventAnnotation, Object handler, Method method)
@@ -300,9 +299,7 @@ private final DefaultHttpClient httpClient;
 private final HttpContext httpContext = new BasicHttpContext();
 //线程池。
 private final static PriorityExecutor EXECUTOR = new PriorityExecutor(DEFAULT_POOL_SIZE);
-```
-
-```java
+...
 public HttpUtils(int connTimeout, String userAgent) {
     //配置超时时间，UserAgent， http 版本信息协议等一些信息
     .....
@@ -340,8 +337,7 @@ public HttpUtils(int connTimeout, String userAgent) {
         }
     });
 }
-```
-```java
+...
 //访问网络数据
 private <T> HttpHandler<T> sendRequest(HttpRequest request, RequestParams params, RequestCallBack<T> callBack);
 //下载网络文件
@@ -350,7 +346,7 @@ public HttpHandler<File> download(HttpRequest.HttpMethod method, String url, Str
 ```
 2.HttpRequest.java
 
-网络请求的包装类，包括url， 访问请求方法， 参数值等。
+网络请求的包装类，包括url，访问请求方法，参数值等。
 
 3.RequestCallBack.java
 
@@ -391,7 +387,6 @@ URLHttpConnection默认支持GZIP压缩，api操作简单。
 > xUtils都是通过HttpClient请求网络（bitmap模块图片下载是通过URLHttpConnection）。
 
 xUtils可以设置拦截器，对请求做了GZIP压缩
-<img src="../img/xutils/httputils_gzip.png" width="651" height="171"/>
 
 * 数据缓存结构
 
