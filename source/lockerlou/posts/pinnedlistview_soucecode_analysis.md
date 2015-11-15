@@ -17,7 +17,7 @@
 
 核心需要重写的方法是ListView的OnScrollListener中的onScroll方法，其代码为：
 
-```
+```java
 //获取ListView的Adapter，并处理异常情况
 ListAdapter adapter = getAdapter();
 if (adapter == null || visibleItemCount == 0) return;
@@ -47,6 +47,8 @@ onScroll方法的逻辑为：
 
 1. 判断第一个子View是不是需要固顶的类型。
 2. 如果是，则直接获取ListView的第一个子View。如果它的顶部和ListView的顶部高度一致，如下所示图，那么说明此时的固顶View需要更换了。但此时并不知道是从上往下滑还是从下往上滑，所以交给后续的onScroll触发进行处理。故此时可以统一把固顶的View移除掉，直接显示ListView的默认内容即可。
+
+<img src="../img/pinnedlistview/example.png" width="400" height="200"/>
 3. 如果高度不一致，则说明是在上面的状态的基础上又往上滑动了一小段距离，如下图所示，此时就需要把固顶的View绘制出来了。
 4. 再回到最初的判断，如果第一个子View不是需要固顶的类型，那么就需要从这个子View在Adapter中的位置向前遍历找到一个标题类型。如果找到了就把固顶的View绘制出来，否则就销毁当前固顶的View。
 
@@ -59,7 +61,7 @@ onScroll方法的逻辑为：
 
 代码如下：
 
-```
+```java
 if (visibleItemCount < 2) {//边界条件，可见item数量小于2
     destroyPinnedShadow();
     return;
@@ -99,7 +101,7 @@ if (nextPosition < getCount()) {
 
 创造当前固顶的View的代码如下：
 
-```
+```java
 PinnedSection pinnedShadow = mRecycleSection;
 mRecycleSection = null;
 
@@ -182,4 +184,5 @@ if (mPinnedSection != null) {
 
 ## 3.参考资料：
 <http://blog.csdn.net/jdsjlzx/article/details/20697257>
+
 <https://github.com/beworker/pinned-section-listview>
