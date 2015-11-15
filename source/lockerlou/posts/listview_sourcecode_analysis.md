@@ -219,7 +219,7 @@ protected void onLayout(boolean changed, int l, int t, int r, int b) {
     }
 }
 ```
-其主要关键就是这个changed变量，当其为true时，会让其子元素强制重绘，并会调用RecycleBin的markChildrenDirty函数（上文已经提及）同样强制重绘。最后都会调用layoutChildren这个函数进行布局。这个函数则是在**ListView**中进行了重写，所以最关键的部分还是由各个子类自己完成。
+其主要关键就是这个changed变量，当其为true时，会让其子元素强制重绘，并会调用RecycleBin的markChildrenDirty方法（上文已经提及）使缓存的View同样强制重绘。最后都会调用layoutChildren这个函数进行布局。这个函数则是在**ListView**中进行了重写，所以最关键的部分还是由各个子类自己完成。接下来看一下layoutChildren方法
 
 ```java
 final RecycleBin recycleBin = mRecycler;
@@ -300,7 +300,7 @@ return selectedView;
 - 当前子元素没有超出屏幕高度
 - 子元素在Adapter中有效
 
-其核心是调用了makeAndAddView函数
+其核心是调用了makeAndAddView方法
 
 ```java
 private View makeAndAddView(int position, int y, boolean flow, int childrenLeft,
@@ -517,58 +517,18 @@ if (scrapView != null) {
     }
 }
 ```
-与第一次调用时的区别主要在这里，scrapView此时不会为null，这是因为刚才已经调用过了addScrapView，把移出屏幕的View加入到了mCurrentScrap中去.随后还会把scrapView传给Adapter的getView方法进行重用，如果无法就行重用，那么child将会不等于scrapView，这个scrapView会重新放回到mCurrentScrap中去。
+与第一次调用时的区别主要在这里，scrapView此时不会为null，这是因为刚才已经调用过了addScrapView，把移出屏幕的View加入到了mCurrentScrap中去.随后还会把scrapView传给Adapter的getView方法进行重用，如果无法进行重用，那么child将会不等于scrapView，这个scrapView会重新放回到mCurrentScrap中去。
 
-从这里的逻辑就可以看出我们平时在重写Adapter的getView应该干什么，首先应该要判断convertView是否为null，这样就可以省下了inflate布局的时间，而使用viewholder方法则会省略findviewbyid的时间。故在写adapterView的时候（特别是数据数量较多的时候）强烈推荐使用viewholder，而且一定要判断covertview是否为null，不然底层的ListView的回收机制就不会起到作用，太浪费了！！！
+从这里的逻辑就可以看出我们平时在重写Adapter的getView应该干什么，首先应该要判断convertView是否为null，这样就可以省下了inflate布局的时间，而使用viewholder方法则会省略findviewbyid的时间。故在写adapterView的时候（特别是数据数量较多的时候）强烈推荐使用viewholder，而且一定要判断covertview是否为null，不然底层的ListView的回收机制就不会起到作用。
 
 ## 5. ListView总结
+#### 第一次Layout方法调用顺序
+<img src="../img/listview/first_layout.png" width="600" height="400"/>
 
-```
-onLayout(Abs)
-      |
-layoutChildren --- fillActiveViews (无用，因为childCount为0)
-               --- detachAllViewsFromParent (无用，因为ListView中还没有子View)
-               --- fillFromTop
- 						|              
-                   fillDown(控制只添加一屏的View)
-                   		|
-                   makeAndAddView --- getActiveView
-                                  --- obtainView    --- getScrapyView(空)
-                                  --- setupChild    --- getView
-                                      		|
-                                      addViewinLayout
-```
-```
-onLayout(Abs)
-	  |
-layoutChildren --- fillActiveViews (填充了mActiveViews)
-               --- detachAllViewsFromParent (全部detach)
-               --- fillSpecific
- 						|              
-                   fillUp/fillDown(控制只添加一屏的View)
-                   		|
-                   makeAndAddView --- getActiveView
-                                  --- setupChild
-  											|
-                                      attachViewToParent
-```
-```
-onTouchEvent(Abs)
-		|
-onTouchMove(Abs)
-		|
-scrollIfNeeded(Abs)
-		|
-trackMotionScroll(Abs) --- addScrapView(循环)
-                       --- detachViewsFromParent
-                       --- offsetChildrenTopAndBottom (偏移)
-                       --- fillGap
-                              |
-                           fillUp/fillDown
-                              |
-                           makeAndAddView --- getActiveView (null)
-                                          --- obtainView   --- getScrapView
-                                          --- setupChild   --- getView		
-```
+#### 第二次Layout方法调用顺序
+<img src="../img/listview/second_layout.png" width="600" height="400"/>
+
+#### 滑动时方法调用顺序
+<img src="../img/listview/scroll.png" width="600" height="400"/>
 ## 6.参考资料
 <http://blog.csdn.net/guolin_blog/article/details/44996879>
