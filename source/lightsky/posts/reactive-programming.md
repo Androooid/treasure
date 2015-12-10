@@ -32,7 +32,7 @@ Rx扩展(Rxjava,RxJs,RxScala)提供了一个用于创建，变换，连接，过
 线程切换 ？
 事件组合？（多个请求和UI操作组合） 
 
-**EveryWhere**
+**EveryWhere**  
 Rx是一种思想，这里的一切都是流，你可以定义任何事物的流，可以是事件，可以是数据结构，任意发挥你的想象，通过Rx的方式来解决问题。（Twitter suggestion的实现）  
 
 ###Callback Hell
@@ -99,7 +99,7 @@ Observable<String> observable = Observable.create(new Observable.OnSubscribe<Str
 ```
 这里传入了一个 OnSubscribe 对象作为参数。OnSubscribe 会被存储在返回的 Observable 对象中，它的作用相当于一个计划表，定义要执行的事件，当 Observable 被订阅的时候，OnSubscribe 的 call() 方法会自动被调用，事件序列就会依照设定依次触发。
 
-**创建Rx队列**
+**创建Rx队列**  
 create() 方法是 RxJava 最基本的创造事件序列的方法。基于这个方法， RxJava 还提供了一些方法用来快捷创建事件队列，例如：
 
 - just(T...): 将传入的参数依次发送出来。
@@ -391,7 +391,7 @@ query("Hello, world!")
 ##五 RxAndroid
 RxAndroid是RxJava的一个针对Android平台的扩展。它包含了一些能够简化Android开发的工具。
 
-**AndroidSchedulers**
+**AndroidSchedulers**  
 提供了针对Android的线程系统的调度器。
 
 ```retrofitService.getImage(url)
@@ -400,7 +400,7 @@ RxAndroid是RxJava的一个针对Android平台的扩展。它包含了一些能�
     .subscribe(bitmap -> myImageView.setImageBitmap(bitmap));
 ```
 
-**AndroidObservable**
+**AndroidObservable**  
 配合Android的生命周期  
 bindActivity()和bindFragment()方法默认使用AndroidSchedulers.mainThread()来执行观察者代码，这两个方法会在Activity或者Fragment结束的时候通知被观察者停止发出新的消息。
 ```
@@ -409,7 +409,7 @@ AndroidObservable.bindActivity(this, retrofitService.getImage(url))
     .subscribe(bitmap -> myImageView.setImageBitmap(bitmap);
 ```
 
-**AndroidObservable.fromBroadcast()**
+**AndroidObservable.fromBroadcast()**  
 允许你创建一个类似BroadcastReceiver的Observable对象。下面的例子展示了如何在网络变化的时候被通知到：
 ```
 IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -417,7 +417,7 @@ AndroidObservable.fromBroadcast(context, filter)
     .subscribe(intent -> handleConnectivityChange(intent));
 ```
 
-**ViewObservable**
+**ViewObservable**  
 使用它可以给View添加了一些绑定。如果你想在每次点击view的时候都收到一个事件，可以使用ViewObservable.clicks()，或者你想监听TextView的内容变化，可以使用ViewObservable.text()。
 
 ```
@@ -429,7 +429,7 @@ ViewObservable.clicks(mCardNameEditText, false)
 
 RxBinding 是 Jake Wharton 的一个开源库，它提供了一套在 Android 平台上的基于 RxJava 的 Binding API。所谓 Binding，就是类似设置 OnClickListener 、设置 TextWatcher 这样的注册绑定对象的 API。
 
-举个设置点击监听的例子。使用 RxBinding ，可以把事件监听用这样的方法来设置：
+举个设置点击监听的例子。使用 RxBinding ，可以把事件监听用这样的方法来设置：  
 ```java
 Button button = ...;
 RxView.clickEvents(button) // 以 Observable 形式来反馈点击事件
@@ -441,7 +441,7 @@ RxView.clickEvents(button) // 以 Observable 形式来反馈点击事件
     });
 ```
 
-通过 RxBinding 把点击监听转换成 Observable 之后，就有了对它进行扩展的可能。扩展的方式有很多，根据需求而定。一个例子是前面提到过的 throttleFirst() ，用于去抖动，也就是消除手抖导致的快速连环点击：
+通过 RxBinding 把点击监听转换成 Observable之后，就有了对它进行扩展的可能。扩展的方式有很多，根据需求而定。一个例子是前面提到过的 throttleFirst() ，用于去抖动，也就是消除手抖导致的快速连环点击：
 
 ```java
 RxView.clickEvents(button)
@@ -451,10 +451,10 @@ RxView.clickEvents(button)
 ```
 
 ##七 这些你应该了解
-**扩展Rx**  
+**扩展Rx**   
 前面举的 Retrofit 和 RxBinding 的例子，是两个可以提供现成的 Observable 的库。而如果你有某些异步操作无法用这些库来自动生成 Observable，也完全可以自己写。例如数据库的读写、大图片的载入、文件压缩/解压等各种需要放在后台工作的耗时操作，都可以用 RxJava 来实现，有了之前几章的例子，这里应该不用再举例了。
 
-**内存泄漏**  
+**内存泄漏**   
 Observable持有Context导致的内存泄露  
 这个问题是因为创建subscription的时候，以某种方式持有了context的引用，尤其是当你和view交互的时候，这太容易发生！如果Observable没有及时结束，内存占用就会越来越大。 
 
