@@ -301,4 +301,4 @@ public static void hideSoftKeyboard(@NonNull View view) {
 1. Mockito的使用；
 2. Android Testing Support Library提供的一些新功能；
 3. Android上对Activity、Service、ContentProvider、Application等组件的测试支持；
-4. UI自动测试化框架；
+4. UI自动化测试框架；
