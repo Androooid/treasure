@@ -22,7 +22,7 @@
 [Android适配之UED标注转换](https://github.com/Androooid/treasure/blob/master/source/bigfootprint/posts/Android-adapt-ued-mark-convert.md) | [BigFootprint](https://github.com/BigFootprint) |
 [RxProgramming](https://github.com/Androooid/treasure/blob/master/source/lightsky/posts/reactive-programming.md) | [lightSky](https://github.com/lightSky) |
 [Android 单元测试](https://github.com/Androooid/treasure/blob/master/source/bigfootprint/posts/Android-unit-test.md) | [BigFootprint](https://github.com/BigFootprint) |
-[携程动态加载实践DynamicAPK项目学习.md](https://github.com/Androooid/treasure/blob/master/source/bequietlee/posts/携程动态加载实践DynamicAPK项目学习.md) | [BeQuietLee](https://github.com/bequietlee) |
+[携程动态加载实践DynamicAPK项目学习](https://github.com/Androooid/treasure/blob/master/source/bequietlee/posts/携程动态加载实践DynamicAPK项目学习.md) | [BeQuietLee](https://github.com/bequietlee) |
 
 
 ## Q & A
