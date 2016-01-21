@@ -167,7 +167,7 @@ switch (mPackageType) {
 
 DynamicAPK中改动后的生成`packageId`的逻辑，位于`ResourceTable.cpp`
 
-```
+```cpp
 ResourceTable::ResourceTable(Bundle* bundle, const String16& assetsPackage, ResourceTable::PackageType type)
     : mAssetsPackage(assetsPackage)
     , mPackageType(type)
